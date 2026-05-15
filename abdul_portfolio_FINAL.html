@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Abdul Wasay — Builder for Hire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#080808;
+  --surface:#0f0f0f;
+  --surface2:#151515;
+  --border:#1e1e1e;
+  --border2:#2a2a2a;
+  --green:#00ff88;
+  --green-dim:rgba(0,255,136,0.07);
+  --white:#f0f0eb;
+  --muted:#555;
+  --muted2:#777;
+  --display:'Bebas Neue',sans-serif;
+  --syne:'Syne',sans-serif;
+  --mono:'Space Mono',monospace;
+}
+body{background:var(--bg);color:var(--white);font-family:var(--syne);overflow-x:hidden;cursor:none}
+::selection{background:var(--green);color:#000}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--green)}
+
+/* custom cursor */
+#cur{position:fixed;width:8px;height:8px;background:var(--green);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .1s}
+#cur2{position:fixed;width:32px;height:32px;border:1px solid rgba(0,255,136,.3);border-radius:50%;pointer-events:none;z-index:9998;transition:left .15s ease,top .15s ease,width .2s,height .2s,opacity .2s}
+#cur2.big{width:52px;height:52px;opacity:.2}
+
+/* noise overlay */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:.5}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 3rem;transition:border-color .3s,background .3s,padding .3s;border-bottom:1px solid transparent}
+nav.stuck{border-color:var(--border);background:rgba(8,8,8,.93);backdrop-filter:blur(20px);padding:1rem 3rem}
+.nav-logo{font-family:var(--mono);font-size:.75rem;color:var(--green);letter-spacing:.14em;text-transform:uppercase}
+.nav-logo span{color:var(--muted2)}
+.nav-right{display:flex;align-items:center;gap:2rem}
+.nav-status{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.62rem;color:var(--muted2);letter-spacing:.08em}
+.status-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.5)}50%{box-shadow:0 0 0 6px rgba(0,255,136,0)}}
+.nav-cta{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:#000;background:var(--green);padding:.5rem 1.2rem;text-decoration:none;transition:opacity .2s}
+.nav-cta:hover{opacity:.8}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:6rem 3rem 3rem;position:relative;overflow:hidden}
+.hero-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.008) 2px,rgba(0,255,136,.008) 4px);pointer-events:none}
+.hero-glow{position:absolute;top:-20%;right:-10%;width:700px;height:700px;background:radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 65%);pointer-events:none}
+.hero-meta{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2.5rem}
+.hero-tag{font-family:var(--mono);font-size:.6rem;color:var(--muted2);letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--border2);padding:.35rem .9rem;opacity:0;animation:fadeIn .5s .2s forwards}
+.hero-loc{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.1em;opacity:0;animation:fadeIn .5s .3s forwards}
+
+/* BIG NAME — Bebas for the massive display */
+h1.hero-name{font-family:var(--display);font-size:clamp(5.5rem,15vw,14rem);line-height:.86;letter-spacing:.01em;opacity:0;animation:slideUp .75s .1s forwards}
+h1.hero-name .outline{display:block;-webkit-text-stroke:1px rgba(0,255,136,.3);color:transparent}
+h1.hero-name .accent{color:var(--green)}
+
+.hero-bottom{display:flex;align-items:flex-end;justify-content:space-between;margin-top:1rem;flex-wrap:wrap;gap:2rem;opacity:0;animation:fadeIn .6s .7s forwards}
+.hero-desc{font-family:var(--mono);font-size:.76rem;color:var(--muted2);line-height:1.85;max-width:440px;letter-spacing:.02em}
+.hero-desc strong{color:var(--white)}
+.hero-actions{display:flex;gap:1rem;align-items:center;flex-shrink:0}
+.btn-main{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#000;background:var(--green);padding:.9rem 2rem;text-decoration:none;display:inline-block;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.btn-main::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);transform:scaleX(0);transform-origin:left;transition:transform .25s}
+.btn-main:hover::before{transform:scaleX(1)}
+.btn-main:hover{box-shadow:0 0 35px rgba(0,255,136,.2);transform:translateY(-2px)}
+.btn-main span{position:relative;z-index:1}
+.btn-sec{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;color:var(--muted2);text-decoration:none;border-bottom:1px solid var(--border2);padding-bottom:.15rem;transition:color .2s,border-color .2s}
+.btn-sec:hover{color:var(--green);border-color:var(--green)}
+.hero-scroll{position:absolute;bottom:2.5rem;left:3rem;font-family:var(--mono);font-size:.56rem;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;display:flex;align-items:center;gap:1rem;opacity:0;animation:fadeIn .5s 1.4s forwards}
+.hero-scroll::after{content:'';display:block;width:50px;height:1px;background:linear-gradient(to right,var(--muted),transparent)}
+
+/* TICKER */
+.ticker{background:var(--green);padding:.55rem 0;overflow:hidden}
+.ticker-track{display:flex;white-space:nowrap;animation:tick 24s linear infinite}
+.ticker-item{font-family:var(--mono);font-size:.66rem;color:#000;letter-spacing:.1em;text-transform:uppercase;padding:0 2rem;display:inline-flex;align-items:center;gap:1rem}
+.ticker-item::after{content:'//';opacity:.3}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SHARED SECTION */
+section.sec{padding:6rem 3rem}
+.sec-label{font-family:var(--mono);font-size:.6rem;color:var(--green);letter-spacing:.22em;text-transform:uppercase;margin-bottom:3rem;display:flex;align-items:center;gap:1rem}
+.sec-label::before{content:'';width:28px;height:1px;background:var(--green)}
+
+/* SERVICES — new design's 3-col grid with Syne titles */
+#services{background:var(--bg)}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.svc{background:var(--bg);padding:2.5rem;transition:background .3s;position:relative;overflow:hidden}
+.svc:hover{background:var(--surface)}
+.svc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.svc:hover::after{transform:scaleX(1)}
+.svc-num{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.14em;margin-bottom:1.2rem}
+.svc-icon{font-size:1.4rem;margin-bottom:.9rem}
+.svc-title{font-family:var(--syne);font-size:1.05rem;font-weight:700;margin-bottom:.75rem;line-height:1.15}
+.svc-desc{font-family:var(--mono);font-size:.68rem;color:var(--muted2);line-height:1.85;letter-spacing:.02em;margin-bottom:1.5rem}
+.svc-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.svc-tag{font-family:var(--mono);font-size:.58rem;color:var(--green);border:1px solid rgba(0,255,136,.15);padding:.2rem .55rem;letter-spacing:.04em}
+
+/* HOW IT WORKS */
+#how{background:var(--surface)}
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+.how-step{padding-left:1.5rem;border-left:1px solid var(--border2)}
+.how-step .step-num{font-family:var(--display);font-size:3.5rem;color:var(--border2);line-height:1;margin-bottom:.6rem}
+.how-step h3{font-family:var(--syne);font-size:.95rem;font-weight:700;margin-bottom:.5rem;color:var(--white)}
+.how-step p{font-family:var(--mono);font-size:.66rem;color:var(--muted2);line-height:1.85}
+
+/* PROOF */
+#proof{background:var(--bg)}
+.proof-heading{font-family:var(--display);font-size:clamp(3rem,7vw,6rem);line-height:.88;letter-spacing:.02em;margin-bottom:4rem}
+.proof-heading .dim{-webkit-text-stroke:1px var(--border2);color:transparent}
+.nums-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.num-item{background:var(--bg);padding:2.5rem;opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s,background .25s}
+.num-item.vis{opacity:1;transform:translateY(0)}
+.num-item:hover{background:var(--surface)}
+.num-val{font-family:var(--display);font-size:3.2rem;color:var(--green);line-height:1;margin-bottom:.4rem}
+.num-label{font-family:var(--mono);font-size:.63rem;color:var(--muted2);letter-spacing:.08em;line-height:1.6}
+
+/* WORK */
+#work{background:var(--surface)}
+.work-list{display:flex;flex-direction:column;gap:1px;background:var(--border)}
+.work-row{background:var(--surface);padding:2.5rem 3rem;display:grid;grid-template-columns:1fr auto;align-items:start;gap:2rem;position:relative;overflow:hidden;opacity:0;transform:translateX(-16px);transition:opacity .5s,transform .5s,background .25s}
+.work-row.vis{opacity:1;transform:translateX(0)}
+.work-row:hover{background:var(--surface2)}
+.work-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--green);transform:scaleY(0);transform-origin:bottom;transition:transform .3s}
+.work-row:hover::before{transform:scaleY(1)}
+.w-name{font-family:var(--display);font-size:2.2rem;letter-spacing:.02em;margin-bottom:.4rem}
+.w-stack{font-family:var(--mono);font-size:.6rem;color:var(--green);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem}
+.w-desc{font-family:var(--mono);font-size:.68rem;color:var(--muted2);line-height:1.85;letter-spacing:.02em;max-width:580px}
+.w-meta{text-align:right;flex-shrink:0}
+.w-year{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.08em}
+.w-badge{display:inline-block;font-family:var(--mono);font-size:.56rem;color:#000;background:var(--green);padding:.18rem .55rem;letter-spacing:.07em;text-transform:uppercase;margin-top:.5rem}
+
+/* BOOK / FORM */
+#book{background:var(--bg)}
+.book-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:5rem;align-items:start}
+.book-heading{font-family:var(--display);font-size:clamp(3.5rem,7vw,6rem);line-height:.88;letter-spacing:.02em;margin-bottom:1.5rem}
+.book-heading .g{color:var(--green)}
+.book-sub{font-family:var(--mono);font-size:.7rem;color:var(--muted2);line-height:1.85;letter-spacing:.02em;margin-bottom:2.5rem}
+.book-checklist{display:flex;flex-direction:column;gap:.9rem}
+.book-check{display:flex;align-items:center;gap:.8rem;font-family:var(--mono);font-size:.66rem;color:var(--muted2);letter-spacing:.04em}
+.book-check::before{content:'→';color:var(--green);flex-shrink:0}
+.form-box{background:var(--surface);border:1px solid var(--border);padding:2.5rem}
+.form-head{font-family:var(--mono);font-size:.62rem;color:var(--green);letter-spacing:.18em;text-transform:uppercase;margin-bottom:2rem;display:flex;align-items:center;gap:.8rem}
+.form-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.f-row{margin-bottom:1.4rem}
+.f-label{font-family:var(--mono);font-size:.58rem;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:.45rem}
+.f-input,.f-select,.f-textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--white);font-family:var(--mono);font-size:.74rem;padding:.72rem 1rem;outline:none;transition:border-color .2s,box-shadow .2s;letter-spacing:.03em;appearance:none}
+.f-input:focus,.f-select:focus,.f-textarea:focus{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
+.f-input::placeholder,.f-textarea::placeholder{color:var(--muted)}
+.f-textarea{resize:vertical;min-height:96px;line-height:1.6}
+.f-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 11 11'%3E%3Cpath fill='%2300ff88' d='M5.5 7.5L1 3h9z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center}
+.f-select option{background:#111}
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.f-submit{width:100%;font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:#000;background:var(--green);border:none;padding:1rem;cursor:pointer;transition:opacity .2s,transform .2s;margin-top:.4rem}
+.f-submit:hover{opacity:.85;transform:translateY(-1px)}
+.f-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.f-note{font-family:var(--mono);font-size:.56rem;color:var(--muted);letter-spacing:.06em;text-align:center;margin-top:.9rem;line-height:1.6}
+.success{display:none;text-align:center;padding:3rem 2rem}
+.success.show{display:block}
+.success-check{font-size:2.5rem;color:var(--green);line-height:1;margin-bottom:1rem}
+.success-t{font-family:var(--display);font-size:3rem;color:var(--green);margin-bottom:.6rem}
+.success-s{font-family:var(--mono);font-size:.68rem;color:var(--muted2);line-height:1.8;letter-spacing:.03em}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:2rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-links{display:flex;gap:2rem}
+.f-links a{font-family:var(--mono);font-size:.6rem;color:var(--muted);text-decoration:none;letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
+.f-links a:hover{color:var(--green)}
+.f-copy{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.06em}
+
+/* ANIMS */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(44px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s,transform .7s}
+.reveal.vis{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav,nav.stuck{padding:1.2rem 1.5rem}
+  .nav-status{display:none}
+  #hero{padding:7rem 1.5rem 4rem}
+  section.sec{padding:4rem 1.5rem}
+  .svc-grid{grid-template-columns:1fr 1fr}
+  .how-grid{grid-template-columns:1fr 1fr;gap:2rem}
+  .nums-grid{grid-template-columns:1fr 1fr}
+  .book-grid{grid-template-columns:1fr;gap:3rem}
+  .f-grid{grid-template-columns:1fr}
+  .work-row{grid-template-columns:1fr;padding:2rem 1.5rem}
+  .w-meta{text-align:left}
+  footer{flex-direction:column;padding:1.5rem}
+}
+@media(max-width:600px){
+  .svc-grid{grid-template-columns:1fr}
+  .how-grid{grid-template-columns:1fr}
+  .nums-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<nav id="nav">
+  <div class="nav-logo">aws<span>.</span>dev</div>
+  <div class="nav-right">
+    <div class="nav-status"><div class="status-dot"></div>Available for projects</div>
+    <a href="#book" class="nav-cta">Start a project</a>
+  </div>
+</nav>
+
+<!-- HERO: Bebas huge name, scanlines, glow, mono desc -->
+<section id="hero">
+  <div class="hero-scanlines"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-meta">
+    <div class="hero-tag">Builder · For Hire · Hyderabad / Remote</div>
+    <div class="hero-loc">HYD / IN &nbsp;·&nbsp; 2025</div>
+  </div>
+  <h1 class="hero-name">
+    ABDUL<br>
+    <span class="outline">WASAY</span>
+  </h1>
+  <div class="hero-bottom">
+    <p class="hero-desc">
+      Got a problem that eats your time?<br>
+      <strong>I automate it.</strong> Need a bot, a backend, an AI tool, a site that converts?<br>
+      Tell me what's broken. I'll fix it.<br><br>
+      <span style="color:var(--muted)">Node.js · Python · FastAPI · Discord · AI · Web</span>
+    </p>
+    <div class="hero-actions">
+      <a href="#book" class="btn-main"><span>Start a project →</span></a>
+      <a href="#work" class="btn-sec">See my work</a>
+    </div>
+  </div>
+  <div class="hero-scroll">scroll to explore</div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">Landing Pages</span>
+    <span class="ticker-item">Discord Bots</span>
+    <span class="ticker-item">Telegram Bots</span>
+    <span class="ticker-item">AI Tools</span>
+    <span class="ticker-item">Backend APIs</span>
+    <span class="ticker-item">Workflow Automation</span>
+    <span class="ticker-item">Data Scrapers</span>
+    <span class="ticker-item">Node.js</span>
+    <span class="ticker-item">Python</span>
+    <span class="ticker-item">FastAPI</span>
+    <span class="ticker-item">Landing Pages</span>
+    <span class="ticker-item">Discord Bots</span>
+    <span class="ticker-item">Telegram Bots</span>
+    <span class="ticker-item">AI Tools</span>
+    <span class="ticker-item">Backend APIs</span>
+    <span class="ticker-item">Workflow Automation</span>
+    <span class="ticker-item">Data Scrapers</span>
+    <span class="ticker-item">Node.js</span>
+    <span class="ticker-item">Python</span>
+    <span class="ticker-item">FastAPI</span>
+  </div>
+</div>
+
+<!-- SERVICES: 3-col Syne grid -->
+<section class="sec" id="services">
+  <div class="sec-label reveal">What I build</div>
+  <div class="svc-grid">
+    <div class="svc reveal">
+      <div class="svc-num">01 /</div>
+      <div class="svc-icon">🌐</div>
+      <div class="svc-title">Landing Pages & Business Sites</div>
+      <p class="svc-desc">Fast, sharp websites that actually convert. Restaurants, studios, startups, local businesses — you get a site that looks like money and loads in a second.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">HTML/CSS</span><span class="svc-tag">React</span><span class="svc-tag">Responsive</span><span class="svc-tag">Fast delivery</span>
+      </div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">02 /</div>
+      <div class="svc-icon">🤖</div>
+      <div class="svc-title">Bots & Automation</div>
+      <p class="svc-desc">Discord bots, Telegram bots, scheduled jobs, multi-platform integrations. Not templates — custom logic built for your exact use case, deployed and maintained.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Discord.js</span><span class="svc-tag">Telegraf</span><span class="svc-tag">Node.js</span><span class="svc-tag">TypeScript</span><span class="svc-tag">Webhooks</span>
+      </div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">03 /</div>
+      <div class="svc-icon">⚡</div>
+      <div class="svc-title">AI-Powered Tools</div>
+      <p class="svc-desc">Custom LLM integrations, RAG pipelines, AI chatbots embedded into your product. GPT doesn't do exactly what you need — I make it.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">OpenAI API</span><span class="svc-tag">LangChain</span><span class="svc-tag">RAG</span><span class="svc-tag">Embeddings</span>
+      </div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">04 /</div>
+      <div class="svc-icon">🔌</div>
+      <div class="svc-title">Backend & APIs</div>
+      <p class="svc-desc">RESTful APIs, JWT auth, RBAC, async pipelines. Production-pattern architecture with clean separation — not tutorial code with your name slapped on it.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">FastAPI</span><span class="svc-tag">Express.js</span><span class="svc-tag">PostgreSQL</span><span class="svc-tag">MongoDB</span><span class="svc-tag">Prisma</span>
+      </div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">05 /</div>
+      <div class="svc-icon">🕷️</div>
+      <div class="svc-title">Scrapers & Data Pipelines</div>
+      <p class="svc-desc">Pull data from anywhere, structure it, pipe it where you need it. Monitoring, alerts, automated reports — set it and forget it.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Playwright</span><span class="svc-tag">BeautifulSoup</span><span class="svc-tag">Cron Jobs</span><span class="svc-tag">Notifications</span>
+      </div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">06 /</div>
+      <div class="svc-icon">🔗</div>
+      <div class="svc-title">Workflow Glue</div>
+      <p class="svc-desc">Connect Notion, Sheets, Slack, email, anything. If two tools don't talk to each other, I write the script that makes them.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Webhooks</span><span class="svc-tag">Google APIs</span><span class="svc-tag">Zapier-alt</span><span class="svc-tag">Custom scripts</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="sec" id="proof">
+  <h2 class="proof-heading reveal">PROOF<br><span class="dim">NOT PROMISES</span></h2>
+  <div class="nums-grid">
+    <div class="num-item">
+      <div class="num-val">Daily</div>
+      <div class="num-label">Automated pipeline shipping reports without failure — built, deployed, maintained solo</div>
+    </div>
+    <div class="num-item">
+      <div class="num-val">5+</div>
+      <div class="num-label">Live platforms integrated in one system — LeetCode, CodeChef, Codeforces, GitHub, SmartInterviews</div>
+    </div>
+    <div class="num-item">
+      <div class="num-val">~98%</div>
+      <div class="num-label">Recall on a medical AI model trained from scratch — raw data pipeline, no pre-built APIs</div>
+    </div>
+    <div class="num-item">
+      <div class="num-val">Copied</div>
+      <div class="num-label">Another dev independently rebuilt CodeSync in Python after finding it on GitHub. Reached out at 2am.</div>
+    </div>
+    <div class="num-item">
+      <div class="num-val">Top 21%</div>
+      <div class="num-label">LeetCode globally. Strong enough to build the right solution, not just any solution.</div>
+    </div>
+    <div class="num-item">
+      <div class="num-val">3</div>
+      <div class="num-label">Projects shipped with real auth, databases, and production deployments — not tutorials</div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="sec" id="work">
+  <div class="sec-label reveal">Recent work</div>
+  <div class="work-list">
+    <div class="work-row">
+      <div>
+        <div class="w-name">CODESYNC BOT</div>
+        <div class="w-stack">TypeScript · Node.js · PostgreSQL · Prisma · GitHub Actions</div>
+        <p class="w-desc">Coding tracker bot that gained organic traction — cited by a professor at another campus, independently replicated by a dev who found the repo and reached out. Tracks submissions across 5+ platforms daily, automated reports, retry logic, encrypted per-user credentials. Always-on on Pterodactyl.</p>
+      </div>
+      <div class="w-meta"><div class="w-year">2025</div><div class="w-badge">Flagship</div></div>
+    </div>
+    <div class="work-row">
+      <div>
+        <div class="w-name">HEALTHSYNC API</div>
+        <div class="w-stack">Python · FastAPI · MongoDB Atlas · JWT · React Native · Expo</div>
+        <p class="w-desc">FastAPI backend with JWT auth and family RBAC for a caregiver-patient medical reminder app. Schema isolates data per family group so caregiver and patient views never bleed. Shipped a working Android APK via Expo.</p>
+      </div>
+      <div class="w-meta"><div class="w-year">2025</div><div class="w-badge">Full Stack</div></div>
+    </div>
+    <div class="work-row">
+      <div>
+        <div class="w-name">AI IMAGE ANALYSIS API</div>
+        <div class="w-stack">Python · TensorFlow/Keras · Flask · CNN</div>
+        <p class="w-desc">CNN trained from scratch on 5,000+ chest X-rays for pneumonia detection. Full pipeline — preprocessing, training, serving — open-sourced. ~98% recall. No pre-built model APIs, built raw.</p>
+      </div>
+      <div class="w-meta"><div class="w-year">2025</div><div class="w-badge">AI/ML</div></div>
+    </div>
+    <div class="work-row">
+      <div>
+        <div class="w-name">TASK MANAGER API</div>
+        <div class="w-stack">Node.js · Express.js · MongoDB · JWT</div>
+        <p class="w-desc">Production-style RESTful backend with JWT auth, role-protected routes, full CRUD, modular service layers, clean middleware separation. The kind of backend you'd actually ship.</p>
+      </div>
+      <div class="w-meta"><div class="w-year">2025</div><div class="w-badge">Backend</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="sec" id="how">
+  <div class="sec-label reveal">How it works</div>
+  <div class="how-grid reveal">
+    <div class="how-step">
+      <div class="step-num">01</div>
+      <h3>Tell me the problem</h3>
+      <p>Not the solution — the actual pain. What's eating your time or blocking your growth?</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">02</div>
+      <h3>I scope it fast</h3>
+      <p>Quick chat. I tell you if it's doable, how long, what it costs. No fluff, no ghost.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">03</div>
+      <h3>I build and ship</h3>
+      <p>You get updates, not silence. I test it properly and hand it off working — not "working on my machine."</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">04</div>
+      <h3>You keep it running</h3>
+      <p>Docs, handoff, support. You're not dependent on me forever — unless you want to be.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK / FORM -->
+<section class="sec" id="book">
+  <div class="book-grid">
+    <div class="reveal">
+      <h2 class="book-heading">LET'S<br>BUILD<br><span class="g">TOGETHER.</span></h2>
+      <p class="book-sub">Fill in the form and I'll get back within 24 hours. Be specific — vague briefs get vague quotes.</p>
+      <div class="book-checklist">
+        <div class="book-check">Landing pages & business sites</div>
+        <div class="book-check">Discord / Telegram bots</div>
+        <div class="book-check">Backend APIs, auth, automation</div>
+        <div class="book-check">AI tools & chatbot integrations</div>
+        <div class="book-check">Payment via UPI (India) · Wise (International)</div>
+        <div class="book-check">Response within 24 hours</div>
+      </div>
+    </div>
+    <div class="form-box reveal">
+      <div id="formInner">
+        <div class="form-head">Project Inquiry</div>
+        <form onsubmit="handleSubmit(event)">
+          <div class="f-grid">
+            <div class="f-row">
+              <label class="f-label">Your Name *</label>
+              <input class="f-input" type="text" name="name" placeholder="John Doe" required/>
+            </div>
+            <div class="f-row">
+              <label class="f-label">Email *</label>
+              <input class="f-input" type="email" name="email" placeholder="you@example.com" required/>
+            </div>
+          </div>
+          <div class="f-row">
+            <label class="f-label">Project Type *</label>
+            <select class="f-select" name="project_type" required>
+              <option value="" disabled selected>Select a service</option>
+              <option>Landing Page / Business Website</option>
+              <option>Discord Bot</option>
+              <option>Telegram Bot</option>
+              <option>Backend API / System</option>
+              <option>AI Tool / Chatbot Integration</option>
+              <option>Workflow Automation</option>
+              <option>Data Pipeline / Scraper</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div class="f-row">
+            <label class="f-label">Budget Range *</label>
+            <select class="f-select" name="budget" required>
+              <option value="" disabled selected>Select budget</option>
+              <option>Under ₹5,000</option>
+              <option>₹5,000 – ₹15,000</option>
+              <option>₹15,000 – ₹30,000</option>
+              <option>₹30,000 – ₹60,000</option>
+              <option>₹60,000+</option>
+              <option>Let's discuss</option>
+            </select>
+          </div>
+          <div class="f-row">
+            <label class="f-label">Timeline</label>
+            <select class="f-select" name="timeline">
+              <option value="" disabled selected>How soon?</option>
+              <option>ASAP (rush fee applies)</option>
+              <option>1–2 weeks</option>
+              <option>2–4 weeks</option>
+              <option>1–2 months</option>
+              <option>Flexible</option>
+            </select>
+          </div>
+          <div class="f-row">
+            <label class="f-label">Project Details *</label>
+            <textarea class="f-textarea" name="message" placeholder="Describe what you need. The more specific, the better the quote." required></textarea>
+          </div>
+          <button type="submit" class="f-submit">Send Inquiry →</button>
+          <p class="f-note">No spam. No cold pitches. Just a direct reply from me.</p>
+        </form>
+      </div>
+      <div class="success" id="successMsg">
+        <div class="success-check">✓</div>
+        <div class="success-t">GOT IT.</div>
+        <p class="success-s">I'll review your project brief and get back within 24 hours.<br>Check your inbox — or spam, just in case.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-links">
+    <a href="https://github.com/AbdulWasay0029" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/abdulwasay0029/" target="_blank">LinkedIn</a>
+    <a href="https://leetcode.com/abdulwasay0029/" target="_blank">LeetCode</a>
+    <a href="mailto:abdulwasay0029@gmail.com">Email</a>
+  </div>
+  <div class="f-copy">© 2025 Abdul Wasay Shumail · Hyderabad, India</div>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){
+  cur.style.cssText=`left:${mx-4}px;top:${my-4}px`;
+  rx+=(mx-rx)*.13;ry+=(my-ry)*.13;
+  cur2.style.cssText=`left:${rx-16}px;top:${ry-16}px`;
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.svc,.work-row').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur2.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cur2.classList.remove('big'));
+});
+
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('stuck',scrollY>40));
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+},{threshold:.1});
+document.querySelectorAll('.reveal,.num-item,.work-row').forEach((el,i)=>{
+  el.style.transitionDelay=(i%3*.08)+'s';
+  obs.observe(el);
+});
+
+async function handleSubmit(e){
+  e.preventDefault();
+  const form=e.target;
+  const btn=form.querySelector('.f-submit');
+  btn.textContent='Sending...';
+  btn.disabled=true;
+  try{
+    const res=await fetch('https://formspree.io/f/mlgzyvlr',{
+      method:'POST',
+      body:new FormData(form),
+      headers:{'Accept':'application/json'}
+    });
+    if(res.ok){
+      document.getElementById('formInner').style.display='none';
+      document.getElementById('successMsg').classList.add('show');
+    }else{
+      btn.textContent='Failed — email me directly';
+      btn.disabled=false;
+    }
+  }catch(err){
+    btn.textContent='Network error — try again';
+    btn.disabled=false;
+  }
+}
+</script>
+</body>
+</html>
